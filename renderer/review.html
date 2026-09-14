@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="ink">
+<head>
+<meta charset="utf-8">
+<title>周笺 · 回顾</title>
+<link rel="stylesheet" href="review.css">
+</head>
+<body>
+
+<header class="topbar drag">
+  <div class="brand">
+    <span class="logo">
+      <svg viewBox="0 0 24 24"><rect x="3.5" y="4.5" width="17" height="15" rx="2.5"/><path d="M3.5 9h17M8 3v3M16 3v3M7.5 13h5M7.5 16.5h9"/></svg>
+    </span>
+    <div>
+      <b>周笺 · 回顾</b>
+      <span class="sub" id="subTitle">全部工作记录</span>
+    </div>
+  </div>
+
+  <div class="searchwrap nodrag">
+    <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/></svg>
+    <input id="q" type="text" placeholder="搜索历史条目…  （Ctrl+F）" autocomplete="off">
+    <button id="qclear" title="清空" hidden>✕</button>
+  </div>
+
+  <div class="tbtns nodrag">
+    <button class="tb" id="btnExport" title="导出全部为 Markdown">
+      <svg viewBox="0 0 24 24"><path d="M12 3v12M7.5 10.5L12 15l4.5-4.5"/><path d="M4 18h16v3H4z"/></svg>
+      <span>导出</span>
+    </button>
+    <button class="tb" id="btnCopy" title="复制为 Markdown">
+      <svg viewBox="0 0 24 24"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M15 9V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h3"/></svg>
+      <span>复制</span>
+    </button>
+    <button class="tb" id="btnData" title="打开数据目录">
+      <svg viewBox="0 0 24 24"><path d="M3 7h6l2 2.5h10V19H3z"/></svg>
+      <span>目录</span>
+    </button>
+    <span class="divider"></span>
+    <button class="wbtn" id="btnMin" title="最小化"><svg viewBox="0 0 24 24"><path d="M6 12h12"/></svg></button>
+    <button class="wbtn" id="btnMax" title="最大化/还原"><svg viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="1.5"/></svg></button>
+    <button class="wbtn danger" id="btnClose" title="关闭"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+  </div>
+</header>
+
+<section class="stats" id="stats"></section>
+
+<main class="body">
+  <aside class="sidebar">
+    <div class="sidehead">
+      <span>周次</span>
+      <div class="chips" id="filters">
+        <button data-f="all" class="sel">全部</button>
+        <button data-f="open">未完成</button>
+        <button data-f="star">重点</button>
+      </div>
+    </div>
+    <div class="weeklist" id="weekList"></div>
+  </aside>
+
+  <section class="detail" id="detail"></section>
+</main>
+
+<div class="toast" id="toast" hidden></div>
+
+<script src="review.js"></script>
+</body>
+</html>

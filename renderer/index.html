@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="ink">
+<head>
+<meta charset="utf-8">
+<title>周笺</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="card" id="card">
+
+  <!-- ─────────── 只读内容态的表头（同时是拖动条） ─────────── -->
+  <div class="ro-head drag" id="roHead">
+    <span class="ro-week" id="roWeek">—</span>
+    <span class="ro-prog" id="roProg"></span>
+  </div>
+
+  <!-- ─────────── 标题栏（可拖动） ─────────── -->
+  <header class="titlebar" id="titlebar">
+    <div class="nav drag">
+      <button class="ico nodrag" id="prev" title="上一周  Alt+←">
+        <svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg>
+      </button>
+      <div class="weekinfo">
+        <div class="wtitle" id="weekTitle">加载中…</div>
+        <div class="wrange dim" id="weekRange"></div>
+      </div>
+      <button class="ico nodrag" id="next" title="下一周  Alt+→">
+        <svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg>
+      </button>
+    </div>
+
+    <div class="tools nodrag">
+      <button class="ico on" id="btnPin" title="窗口置顶">
+        <svg viewBox="0 0 24 24"><path d="M9 4h6M12 4v7M12 11l-4 4v3h8v-3l-4-4z"/><path d="M12 18v3"/></svg>
+      </button>
+      <button class="ico" id="btnReview" title="回顾面板  Ctrl+R">
+        <svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h10"/></svg>
+      </button>
+      <button class="ico" id="btnMore" title="设置">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2"/></svg>
+      </button>
+      <button class="ico" id="btnFold" title="收起为只读（Esc）">
+        <svg viewBox="0 0 24 24"><path d="M2.5 12S6 6.5 12 6.5 21.5 12 21.5 12 18 17.5 12 17.5 2.5 12 2.5 12z"/><circle cx="12" cy="12" r="2.6"/></svg>
+      </button>
+      <button class="ico" id="btnMin" title="最小化">
+        <svg viewBox="0 0 24 24"><path d="M6 12h12"/></svg>
+      </button>
+      <button class="ico danger" id="btnClose" title="收起到托盘">
+        <svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- ─────────── 进度条 ─────────── -->
+  <div class="progress" id="progress" title="本周完成进度">
+    <i id="bar"></i>
+  </div>
+
+  <!-- ─────────── 条目列表 ─────────── -->
+  <main class="list" id="list"></main>
+
+  <!-- ─────────── 本周复盘 ─────────── -->
+  <section class="summary" id="summaryWrap" hidden>
+    <textarea id="summary" rows="4" placeholder="本周复盘：做成了什么 · 卡在哪 · 下周重点…"></textarea>
+  </section>
+
+  <!-- ─────────── 输入区 ─────────── -->
+  <footer class="composer">
+    <button class="ico tiny nodrag" id="btnSum" title="展开/收起本周复盘">
+      <svg viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16v4z"/><path d="M14 6l4 4"/></svg>
+    </button>
+    <textarea id="input" rows="1" placeholder="记一条…  Enter 保存 · 条目右侧 ＋ 加子任务"></textarea>
+    <button class="add nodrag" id="btnAdd" title="添加  Ctrl+Enter">
+      <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+    </button>
+  </footer>
+
+  <!-- ─────────── 设置面板 ─────────── -->
+  <div class="panel nodrag" id="panel" hidden>
+    <div class="prow">
+      <label>界面缩放</label>
+      <div class="seg" id="segScale">
+        <button data-s="-1">A−</button>
+        <button data-s="0" id="scaleVal">100%</button>
+        <button data-s="1">A＋</button>
+      </div>
+    </div>
+    <div class="prow">
+      <label>不透明度</label>
+      <input type="range" id="opacity" min="30" max="100" step="1" value="97">
+      <span class="val" id="opacityVal">97%</span>
+    </div>
+    <div class="prow">
+      <label>主题</label>
+      <div class="theme-pick" id="themePick">
+        <button data-t="ink" title="墨"></button>
+        <button data-t="paper" title="纸"></button>
+        <button data-t="amber" title="笺"></button>
+      </div>
+    </div>
+    <div class="prow">
+      <label>窗口置顶 <span class="dim" id="topState">—</span></label>
+      <button class="link" id="btnRefloat" title="强制重新置顶一次">重新置顶</button>
+    </div>
+    <div class="prow switch">
+      <label>强力置顶 <span class="dim">压过其他置顶窗口</span></label>
+      <input type="checkbox" id="topStrong">
+    </div>
+    <div class="prow switch">
+      <label>启动时只显示内容 <span class="dim">双击便签进入编辑</span></label>
+      <input type="checkbox" id="liteMode">
+    </div>
+    <div class="prow switch">
+      <label>缩放时同步调整窗口</label>
+      <input type="checkbox" id="scaleWindow">
+    </div>
+    <div class="prow switch">
+      <label>开机自动启动</label>
+      <input type="checkbox" id="autoStart">
+    </div>
+    <div class="prow switch">
+      <label>开机后最小化到托盘</label>
+      <input type="checkbox" id="startMinimized">
+    </div>
+    <div class="prow switch">
+      <label>点关闭按钮收起到托盘</label>
+      <input type="checkbox" id="closeToTray">
+    </div>
+    <div class="prow switch">
+      <label>显示托盘图标</label>
+      <input type="checkbox" id="showTray">
+    </div>
+    <div class="prow col">
+      <label>数据目录</label>
+      <div class="pathrow">
+        <code id="dataPath" title=""></code>
+        <button class="link" id="btnOpenData">打开</button>
+      </div>
+    </div>
+    <div class="prow col">
+      <label>导出 / 维护</label>
+      <div class="btnrow">
+        <button class="sbtn" id="btnExport">导出全部为 Markdown</button>
+        <button class="sbtn" id="btnClear">清空本周</button>
+      </div>
+    </div>
+    <div class="prow col">
+      <div class="btnrow">
+        <button class="sbtn" id="btnReview2">打开回顾面板</button>
+        <button class="sbtn ghost" id="btnQuit">退出周笺</button>
+      </div>
+    </div>
+    <div class="pfoot dim" id="verLine"></div>
+  </div>
+
+  <div class="toast" id="toast" hidden></div>
+
+  <!-- ─────────── 八向缩放手柄 ─────────── -->
+  <div class="grip g-n"  data-dir="n"></div>
+  <div class="grip g-s"  data-dir="s"></div>
+  <div class="grip g-w"  data-dir="w"></div>
+  <div class="grip g-e"  data-dir="e"></div>
+  <div class="grip g-nw" data-dir="nw"></div>
+  <div class="grip g-ne" data-dir="ne"></div>
+  <div class="grip g-sw" data-dir="sw"></div>
+  <div class="grip g-se" data-dir="se"></div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>

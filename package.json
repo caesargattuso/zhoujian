@@ -1,0 +1,35 @@
+{
+  "name": "zhoujian",
+  "productName": "周笺",
+  "version": "1.0.0",
+  "description": "周笺 · 一张贴在 Windows 桌面上的周记便签：置顶悬浮、双击编辑、按周归档、可回顾检索",
+  "main": "main.js",
+  "author": "jiawei.ju",
+  "license": "MIT",
+  "keywords": ["electron", "sticky-note", "weekly", "todo", "windows", "desktop", "便签", "周记"],
+  "private": true,
+  "scripts": {
+    "start": "electron .",
+    "selftest": "electron . --selftest",
+    "shots": "electron . --shots",
+    "diag": "electron . --diag",
+    "dist": "electron-builder --win portable --x64"
+  },
+  "devDependencies": {
+    "electron": "^44.3.0",
+    "electron-builder": "^25.1.8"
+  },
+  "build": {
+    "appId": "com.boss.zhoujian",
+    "productName": "ZhouJian",
+    "directories": { "output": "release" },
+    "files": ["main.js", "preload.js", "src/**/*", "renderer/**/*", "assets/**/*", "package.json"],
+    "win": {
+      "target": ["portable"],
+      "icon": "assets/icon.ico"
+    },
+    "portable": {
+      "artifactName": "周笺-${version}-便携版.exe"
+    }
+  }
+}

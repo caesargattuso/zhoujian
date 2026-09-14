@@ -1,0 +1,21 @@
+# 依赖与构建产物
+node_modules/
+release/
+
+# 运行时数据（属于你自己的便签内容，不要提交）
+data/settings.json
+data/weeks/
+data/export/
+
+# 自检 / 截图产物
+selftest-report.json
+diag-report.json
+shots/
+
+# 杂项
+*.log
+.DS_Store
+Thumbs.db
+
+# WorkBuddy 项目记忆（属于本地工作数据，不发布）
+.workbuddy/
