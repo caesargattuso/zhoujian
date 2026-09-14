@@ -6,7 +6,24 @@
   "main": "main.js",
   "author": "jiawei.ju",
   "license": "MIT",
-  "keywords": ["electron", "sticky-note", "weekly", "todo", "windows", "desktop", "便签", "周记"],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/caesargattuso/zhoujian.git"
+  },
+  "bugs": {
+    "url": "https://github.com/caesargattuso/zhoujian/issues"
+  },
+  "homepage": "https://github.com/caesargattuso/zhoujian#readme",
+  "keywords": [
+    "electron",
+    "sticky-note",
+    "weekly",
+    "todo",
+    "windows",
+    "desktop",
+    "便签",
+    "周记"
+  ],
   "private": true,
   "scripts": {
     "start": "electron .",
@@ -22,10 +39,21 @@
   "build": {
     "appId": "com.boss.zhoujian",
     "productName": "ZhouJian",
-    "directories": { "output": "release" },
-    "files": ["main.js", "preload.js", "src/**/*", "renderer/**/*", "assets/**/*", "package.json"],
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "src/**/*",
+      "renderer/**/*",
+      "assets/**/*",
+      "package.json"
+    ],
     "win": {
-      "target": ["portable"],
+      "target": [
+        "portable"
+      ],
       "icon": "assets/icon.ico"
     },
     "portable": {
