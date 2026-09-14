@@ -1,0 +1,20 @@
+# 默认按文本处理，仓库里统一 LF，检出时按平台转换
+* text=auto eol=lf
+
+# ── 以下两类文件不要碰 ──────────────────────────────────
+# start.bat 必须是「纯 ASCII + CRLF」，混入非 ASCII 字节会报
+#   'm' 不是内部或外部命令 / 找不到批处理文件
+start.bat           text eol=crlf
+
+# 启动周笺.vbs 必须是「UTF-16LE + BOM + CRLF」。
+# WSH 默认按 ANSI(GBK) 读 .vbs，编码一乱就报
+#   Microsoft VBScript 编译器错误: 未结束的字符串常量
+# 标成 binary 让 Git 完全不做行尾/编码转换。
+*.vbs               binary
+
+# 二进制资源
+*.ico               binary
+*.png               binary
+
+# 其它
+package-lock.json   -diff linguist-generated
