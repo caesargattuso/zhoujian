@@ -1,6 +1,8 @@
 # 依赖与构建产物
 node_modules/
 release/
+dist-out/
+.builder-cache/
 
 # 运行时数据（属于你自己的便签内容，不要提交）
 data/settings.json
@@ -14,6 +16,7 @@ shots/
 
 # 杂项
 *.log
+.gh-release-state.json
 .DS_Store
 Thumbs.db
 

@@ -30,7 +30,7 @@
     "selftest": "electron . --selftest",
     "shots": "electron . --shots",
     "diag": "electron . --diag",
-    "dist": "electron-builder --win portable --x64"
+    "dist": "node tools/build.js"
   },
   "devDependencies": {
     "electron": "^44.3.0",

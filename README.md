@@ -1,5 +1,10 @@
 # 周笺 · Zhōujiān
 
+[![Release](https://img.shields.io/github/v/release/caesargattuso/zhoujian?label=release&color=e8b04b)](https://github.com/caesargattuso/zhoujian/releases/latest)
+[![Platform](https://img.shields.io/badge/platform-Windows%20x64-0078D6)](#下载安装普通用户)
+[![License](https://img.shields.io/github/license/caesargattuso/zhoujian)](LICENSE)
+[![Electron](https://img.shields.io/badge/Electron-44-47848F)](https://www.electronjs.org/)
+
 > 一张贴在 Windows 桌面上的周记便签。默认只有内容，双击才编辑。
 
 「笺」是信笺、便笺的笺 —— 比"签"多一点纸的味道。**周笺**读起来又像「周间」，正是"一周之间"的意思。
@@ -16,7 +21,25 @@
 
 ---
 
-## 快速开始
+## 下载安装（普通用户）
+
+不想碰命令行就直接下打包好的版本：
+
+👉 **[下载最新版 Release](https://github.com/caesargattuso/zhoujian/releases/latest)**
+
+| 下载 | 适合 | 说明 |
+| --- | --- | --- |
+| `ZhouJian-<版本>-portable.exe` | 大部分人 | **单文件，双击即用**，无需安装。首次启动会先解压到临时目录，约 2–3 秒 |
+| `ZhouJian-<版本>-win-x64.zip` | 想常驻用 | 解压到固定目录（别放临时目录），双击里面的 `ZhouJian.exe`。启动更快，数据就存在该目录 |
+
+两种都不需要装 Node 或任何运行库，Electron 运行时已打包在内。
+
+> 文件用英文名是因为 GitHub 会剥掉 Release 文件名里的中文字符，中文名称请以上表为准。
+> 未做代码签名，首次运行 SmartScreen 可能提示「未知发布者」，点「更多信息 → 仍要运行」即可。
+
+---
+
+## 从源码运行
 
 | 方式 | 操作 |
 | --- | --- |
@@ -247,24 +270,34 @@ data/
 ## 打包
 
 ```bash
-npm run dist
+npm run dist                        # 输出到 release/
+node tools/build.js --out=dist-out  # 指定输出目录
+node tools/build.js --no-kill       # 不动正在运行的实例
 ```
 
-产物：`release/周笺-1.0.0-便携版.exe`（单文件，双击即用，配置和数据存在 exe 同级的 `data/`）。
+产物：`<输出目录>/周笺-<版本>-便携版.exe`（单文件，双击即用，配置和数据存在 `data/`）。
+
+`tools/build.js` 处理了三件在国内网络 + 非管理员 Windows 上必踩的事：
+
+1. **二进制走国内镜像** —— electron 与 electron-builder 的附属二进制默认从 GitHub 拉，直连很慢，脚本里换成 npmmirror
+2. **winCodeSign 解压失败** —— 该包 `darwin/` 下有 `.dylib` 符号链接，非管理员账户建不了 symlink，7za 返回非零码会让整个构建中止。脚本会预先解压好缓存（排除 darwin）供其复用
+3. **文件被锁** —— 若 `ZhouJian.exe` 正在运行，`win-unpacked` 里的文件会被占用，构建报 `The process cannot access the file`。脚本会先结束残留实例
+
+想要「解压即用」的绿色版，把 `win-unpacked/` 整个目录压缩即可（启动比单文件便携版快，省掉每次解压到临时目录的 2–3 秒）。
 
 ---
 
 ## 自检
 
 ```bash
-npm run selftest    # 33 项冒烟检查，全过退出码 0
-npm run shots       # 灌入示例数据，把 5 个界面状态截图到 shots/
+npm run selftest    # 55 项冒烟检查，全过退出码 0
+npm run shots       # 灌入示例数据，把 9 个界面状态截图到 shots/
 npm run diag        # 输出当前环境诊断（置顶状态、启动项、数据目录），写 diag-report.json
 ```
 
-`npm run selftest` 覆盖：ISO 周计算与跨年、存盘往返、原子写入无残留、覆盖前备份、统计口径、跨周检索、Markdown 导出、配置持久化、窗口创建、**渲染层无脚本错误**、程序化缩放、界面骨架完整、八向手柄、preload 桥可用、脚本已执行、置顶 API、开机自启写入读回与清理、图标、托盘。
+`npm run selftest` 覆盖：ISO 周计算与跨年、存盘往返、原子写入无残留、覆盖前备份、统计口径、跨周检索、Markdown 导出、配置持久化、窗口创建、**渲染层无脚本错误**、程序化缩放、界面骨架完整、八向手柄、preload 桥可用、脚本已执行、只读贴纸态的实际 computed style、**置顶 4 项硬性断言**、**子任务 13 项**（派生状态 / 叶子计数 / 检索带父任务 / Markdown 嵌套 / 老格式兼容）、开机自启写入读回与清理、图标、托盘。
 
-> 自检里的「置顶」是**软性检查**：在虚拟显示 / 远程会话 / 受限沙箱下 `isAlwaysOnTop()` 会恒返回 `false`，这不代表功能损坏。报告里会单独标出来。
+> 唯一的软性项是「开机自启注册表直查校验」：当 `reg.exe` 被执行策略拦住时无法校验，报告里会标为软性失败，不计入硬性通过条件。
 
 ---
 
