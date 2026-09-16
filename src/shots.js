@@ -110,6 +110,13 @@ async function runShots(ctx) {
   await wait(700);
   await save(note, '02-note-edit');
 
+  /* 缩到最小宽度，验证窄窗口下标题/输入框不拥挤 */
+  await note.setBounds({ x: 60, y: 40, width: 320, height: 588 });
+  await wait(700);
+  await save(note, '02b-note-edit-narrow');
+  await note.setBounds({ x: 60, y: 40, width: 372, height: 588 });
+  await wait(300);
+
   /* 换一周看看 */
   await note.webContents.executeJavaScript(`document.querySelector('#prev').click()`);
   await wait(900);

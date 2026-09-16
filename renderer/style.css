@@ -83,7 +83,8 @@ body {
   flex-direction: column;
   background: var(--card);
   border-radius: var(--radius);
-  box-shadow: var(--shadow), 0 0 0 1px var(--line) inset;
+  /* 便签窗口不使用外投影：窗口透明区域保持完全干净，桌面直接透出 */
+  box-shadow: 0 0 0 1px var(--line) inset;
   overflow: hidden;
 }
 
@@ -92,36 +93,36 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: .3rem;
-  padding: .45rem .5rem .45rem .35rem;
+  gap: .4rem;
+  padding: .5rem .55rem .5rem .45rem;
   background: var(--card2);
   border-bottom: 1px solid var(--line);
-  min-height: 2.6rem;
+  min-height: 2.7rem;
 }
 
 .drag { -webkit-app-region: drag; }
 .nodrag, button, input, textarea, .list, .panel { -webkit-app-region: no-drag; }
 
-.nav { display: flex; align-items: center; gap: .1rem; min-width: 0; flex: 1; }
-.weekinfo { min-width: 0; flex: 1; text-align: center; }
-.wtitle { font-size: .92rem; font-weight: 600; letter-spacing: .01em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.wrange { font-size: .72rem; margin-top: .06rem; }
+.nav { display: flex; align-items: center; gap: .15rem; min-width: 0; flex: 1; }
+.weekinfo { min-width: 5.5rem; flex: 1; text-align: center; padding: 0 .1rem; }
+.wtitle { font-size: .92rem; font-weight: 600; letter-spacing: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.wrange { font-size: .72rem; margin-top: .08rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .dim { color: var(--dim); }
 
-.tools { display: flex; align-items: center; gap: .08rem; }
+.tools { display: flex; align-items: center; gap: .02rem; }
 
 /* ────────────────────────────── 按钮 ────────────────────────────── */
 button { font-family: inherit; cursor: pointer; border: none; background: none; color: inherit; }
 
 .ico {
-  width: 1.62rem; height: 1.62rem;
+  width: 1.52rem; height: 1.52rem;
   display: inline-flex; align-items: center; justify-content: center;
   border-radius: 7px;
   color: var(--dim);
   transition: background .12s, color .12s;
   flex: none;
 }
-.ico svg { width: 1rem; height: 1rem; fill: none; stroke: currentColor; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; }
+.ico svg { width: .95rem; height: .95rem; fill: none; stroke: currentColor; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; }
 .ico:hover { background: var(--hover); color: var(--fg); }
 .ico.on { color: var(--accent); }
 .ico.on:hover { background: var(--hover); }
@@ -303,11 +304,12 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 
 /* ────────────────────────────── 输入区 ────────────────────────────── */
 .composer {
-  display: flex; align-items: flex-end; gap: .28rem;
-  padding: .4rem .45rem .45rem;
+  display: flex; align-items: flex-end; gap: .32rem;
+  padding: .45rem .5rem .5rem;
   border-top: 1px solid var(--line);
   background: var(--card2);
   flex: none;
+  min-height: 2.8rem;
 }
 .composer textarea {
   flex: 1;
@@ -318,10 +320,12 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   font-family: inherit;
   font-size: .84rem;
   line-height: 1.45;
-  padding: .38rem .5rem;
+  padding: .4rem .52rem;
   resize: none;
   outline: none;
+  min-height: 1.8rem;
   max-height: 6.4rem;
+  overflow-y: hidden;
   user-select: text;
 }
 .composer textarea:focus { border-color: var(--accent); }

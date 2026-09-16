@@ -1,7 +1,7 @@
 # 依赖与构建产物
 node_modules/
 release/
-dist-out/
+dist-out*/
 .builder-cache/
 
 # 运行时数据（属于你自己的便签内容，不要提交）

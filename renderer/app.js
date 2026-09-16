@@ -7,7 +7,7 @@ const $ = (s) => document.querySelector(s);
 const API = window.zb;
 window.__zb = { ready: true };   // 供自检探针识别
 
-const MIN_W = 250;
+const MIN_W = 320;
 const MIN_H = 170;
 const SCALE_MIN = 0.7;
 const SCALE_MAX = 2.0;
@@ -153,7 +153,7 @@ function syncRoHead(doneN, total) {
   if (!wk) return;
   const d = state.data;
   wk.textContent = d && d.short
-    ? `${d.short}　${d.range || ''}${d.isCurrent ? '　· 本周' : ''}`
+    ? `${d.short}　${d.year ? d.year + ' · ' : ''}${d.range || ''}${d.isCurrent ? '　· 本周' : ''}`
     : '—';
   if (pg) {
     if (typeof doneN === 'number' && total) {
@@ -615,7 +615,10 @@ function bindSubsDrop(box, entry) {
 
 function autoGrow(ta) {
   ta.style.height = 'auto';
-  ta.style.height = Math.min(ta.scrollHeight, 100) + 'px';
+  const max = 92;                       // 与 CSS max-height: 6.4rem（≈92px @ scale=1）对齐
+  const want = Math.min(ta.scrollHeight, max);
+  ta.style.height = want + 'px';
+  ta.style.overflowY = ta.scrollHeight > max ? 'auto' : 'hidden';
 }
 
 function addEntry() {
@@ -642,15 +645,15 @@ async function loadWeek(key, { focusInput = false } = {}) {
   state.key = key;
   state.addingFor = null;
   const d = await API.describe(key);
-  $('#weekTitle').textContent = `${d.year} 年第 ${d.week} 周`;
+  $('#weekTitle').textContent = `第 ${d.week} 周`;
   const cur = await API.currentWeek();
-  $('#weekRange').textContent = d.range + (key === cur ? '　· 本周' : '');
+  $('#weekRange').textContent = `${d.year} · ${d.range}` + (key === cur ? '　· 本周' : '');
   $('#weekRange').classList.toggle('dim', key !== cur);
 
   const w = await API.loadWeek(key);
   state.data = {
     entries: w.entries || [], summary: w.summary || '',
-    title: `${d.year} 年第 ${d.week} 周`, short: `第 ${d.week} 周`, range: d.range, isCurrent: key === cur
+    title: `${d.year} 年第 ${d.week} 周`, short: `第 ${d.week} 周`, year: d.year, range: d.range, isCurrent: key === cur
   };
 
   const sw = $('#summaryWrap');
@@ -818,6 +821,7 @@ function bindPanel() {
   bindToggle('#closeToTray', 'closeToTray');
   bindToggle('#showTray', 'showTray');
   bindToggle('#autoStart', 'autoStart', (v) => toast(v ? '已设置开机自启' : '已取消开机自启'));
+  bindToggle('#disableGpu', 'disableGpu', (v) => toast(v ? '兼容模式已开启，重启后生效' : '兼容模式已关闭，重启后生效'));
 
   $('#btnOpenData').addEventListener('click', () => API.revealData());
   $('#btnRefloat').addEventListener('click', async () => {
@@ -827,6 +831,14 @@ function bindPanel() {
   });
   $('#btnReview2').addEventListener('click', () => { togglePanel(false); API.openReview(state.key); });
   $('#btnReview').addEventListener('click', () => API.openReview(state.key));
+
+  $('#btnCopyMd').addEventListener('click', async () => {
+    try {
+      const md = await API.weekMarkdown(state.key);
+      await API.writeClipboard(md);
+      toast('已复制为 Markdown');
+    } catch (e) { toast('复制失败：' + e.message); }
+  });
 
   $('#btnExport').addEventListener('click', async () => {
     try {

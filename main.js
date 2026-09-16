@@ -21,6 +21,24 @@ const isShots = ARGV.includes('--shots');
 const isDiag = ARGV.includes('--diag');
 const forceOpaque = ARGV.includes('--no-transparency');
 
+/* 透明窗口在部分 Windows 机器上会因「硬件加速 × DWM 合成」冲突渲染出黑底/黑框
+   （electron/electron#40515）。关闭硬件加速对某些机器有效，但在另一些机器上会让窗口
+   变成白底甚至完全不可见——所以**默认关闭**，只作为「兼容模式」开关供需要的人手动尝试。
+   设置项 disableGpu（默认关）可在设置面板切换；启动参数 --no-gpu / --gpu 强制覆盖。
+   必须在 app ready 之前决定。 */
+function wantNoGpu() {
+  if (ARGV.includes('--gpu')) return false;
+  if (ARGV.includes('--no-gpu')) return true;
+  try {
+    const raw = JSON.parse(fs.readFileSync(path.join(resolveDataDir(), 'settings.json'), 'utf8'));
+    return raw.disableGpu === true;       // 默认关闭
+  } catch (_) { return false; }
+}
+if (wantNoGpu()) {
+  app.disableHardwareAcceleration();
+  app.commandLine.appendSwitch('enable-transparent-visuals');
+}
+
 // 截图模式用临时数据目录，避免污染真实数据
 if (isShots && !process.env.ZHOUJIAN_DATA_DIR) {
   const tmp = path.join(require('os').tmpdir(), 'zhoujian-shots');
@@ -194,7 +212,7 @@ function noteWindowOptions() {
   const opt = {
     width: Math.max(260, b.width || 372),
     height: Math.max(180, b.height || 588),
-    minWidth: 250,
+    minWidth: 320,
     minHeight: 170,
     frame: false,
     transparent,
@@ -631,6 +649,7 @@ function registerIPC() {
   ipcMain.handle('store:stats', () => store.stats());
   ipcMain.handle('store:deleteWeek', (e, key) => store.deleteWeek(key));
   ipcMain.handle('store:exportMd', () => store.exportMarkdown());
+  ipcMain.handle('store:weekMarkdown', (e, key) => store.weekToMarkdown(key));
   ipcMain.handle('store:revealData', () => shell.openPath(store.root));
   ipcMain.handle('store:revealFile', (e, p) => shell.showItemInFolder(p));
 

@@ -69,7 +69,7 @@
     <button class="ico tiny nodrag" id="btnSum" title="展开/收起本周复盘">
       <svg viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16v4z"/><path d="M14 6l4 4"/></svg>
     </button>
-    <textarea id="input" rows="1" placeholder="记一条…  Enter 保存 · 条目右侧 ＋ 加子任务"></textarea>
+    <textarea id="input" rows="1" placeholder="记一条，Enter 保存"></textarea>
     <button class="add nodrag" id="btnAdd" title="添加  Ctrl+Enter">
       <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
     </button>
@@ -111,6 +111,10 @@
       <input type="checkbox" id="liteMode">
     </div>
     <div class="prow switch">
+      <label>兼容模式 <span class="dim">修透明黑框；个别机器会白底/不可见，慎开（重启生效）</span></label>
+      <input type="checkbox" id="disableGpu">
+    </div>
+    <div class="prow switch">
       <label>缩放时同步调整窗口</label>
       <input type="checkbox" id="scaleWindow">
     </div>
@@ -140,7 +144,10 @@
     <div class="prow col">
       <label>导出 / 维护</label>
       <div class="btnrow">
-        <button class="sbtn" id="btnExport">导出全部为 Markdown</button>
+        <button class="sbtn" id="btnCopyMd">复制本周为 Markdown</button>
+        <button class="sbtn" id="btnExport">导出全部</button>
+      </div>
+      <div class="btnrow">
         <button class="sbtn" id="btnClear">清空本周</button>
       </div>
     </div>

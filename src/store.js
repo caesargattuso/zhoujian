@@ -22,6 +22,7 @@ const DEFAULT_SETTINGS = {
   alwaysOnTop: true,
   topStrong: true,          // 用本机可用的最强置顶层级（能压过其他置顶窗口）
   transparency: true,         // 圆角 + 投影（关掉则退化为不透明直角窗口）
+  disableGpu: false,          // 兼容模式：关硬件加速（默认关；部分机器反而会白底/不可见）
   opacity: 0.97,
   scale: 1,
   scaleWindow: true,          // 布局缩放时窗口一起缩放
@@ -328,6 +329,39 @@ class Store {
       lines.push('');
     }
     return lines.join('\n');
+  }
+
+  /** 单周导出为 Markdown（用于「复制为 Markdown」）：标题用周标题，含进度、条目、子任务、复盘 */
+  weekToMarkdown(key) {
+    const w = this.loadWeek(key);
+    const isCur = key === weekUtil.weekKey();
+    let total = 0, done = 0;
+    for (const e of w.entries) { const c = countEntry(e); total += c.total; done += c.done; }
+    const lines = [`# ${w.title}　（${w.range}）`, ''];
+    lines.push(`完成进度：**${done}/${total}**　${total ? Math.round(done / total * 100) + '%' : '—'}${isCur ? '　· 本周' : ''}`);
+    lines.push('');
+    if (w.entries.length) {
+      for (const e of w.entries) {
+        const box = e.done ? 'x' : ' ';
+        const star = e.star ? ' ⭐' : '';
+        lines.push(`- [${box}] ${e.text.replace(/\n/g, '\n    ')}${star}`);
+        for (const c of (e.children || [])) {
+          const cbox = c.done ? 'x' : ' ';
+          const cstar = c.star ? ' ⭐' : '';
+          lines.push(`    - [${cbox}] ${c.text.replace(/\n/g, '\n        ')}${cstar}`);
+        }
+      }
+    } else {
+      lines.push('- （本周暂无记录）');
+    }
+    lines.push('');
+    if (w.summary && w.summary.trim()) {
+      lines.push('**本周复盘**：');
+      lines.push('');
+      lines.push(w.summary.trim().split('\n').map(l => '> ' + l).join('\n'));
+      lines.push('');
+    }
+    return lines.join('\n').replace(/\n+$/, '\n');
   }
 
   exportMarkdown() {

@@ -19,6 +19,7 @@ contextBridge.exposeInMainWorld('zb', {
   stats: () => invoke('store:stats'),
   deleteWeek: (k) => invoke('store:deleteWeek', k),
   exportMd: () => invoke('store:exportMd'),
+  weekMarkdown: (k) => invoke('store:weekMarkdown', k),
   revealData: () => invoke('store:revealData'),
   revealFile: (p) => invoke('store:revealFile', p),
 
