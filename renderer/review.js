@@ -7,6 +7,9 @@ const $ = (s) => document.querySelector(s);
 const API = window.zb;
 window.__zb = { ready: true };
 
+/* 右键禁用：不弹上下文菜单 */
+document.addEventListener('contextmenu', (e) => e.preventDefault());
+
 const S = {
   weeks: [],          // listWeeks 结果
   stats: null,

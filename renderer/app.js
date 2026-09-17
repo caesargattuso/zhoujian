@@ -990,7 +990,14 @@ async function boot() {
   bindPanel();
   bindKeys();
 
-  window.addEventListener('blur', () => touch(true));
+  /* 右键禁用：任何地方都不弹出上下文菜单 */
+  document.addEventListener('contextmenu', (e) => e.preventDefault());
+
+  /* 失去焦点（点到别处）→ 自动收成只读简单态，并顺手落盘 */
+  window.addEventListener('blur', () => {
+    touch(true);
+    if (!state.lite) setLite(true);
+  });
   document.addEventListener('visibilitychange', () => { if (document.hidden) touch(true); });
 
   API.onMainEvent(async (msg) => {

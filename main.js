@@ -11,6 +11,7 @@ const { app, BrowserWindow, ipcMain, screen, shell, Tray, Menu, nativeImage, dia
 const { execFileSync } = require('child_process');
 const path = require('path');
 const fs = require('fs');
+const os = require('os');
 const Store = require('./src/store');
 const weekUtil = require('./src/week');
 
@@ -56,21 +57,67 @@ let boundsTimer = null;
 
 /* ------------------------------------------------------------------ 数据目录 */
 
+/* 默认数据目录：~/.zhoujian/data
+   （跨构建 / 跨盘统一，不再随 exe 所在目录漂移；可用 ZHOUJIAN_DATA_DIR 覆盖） */
+const DATA_HOME = path.join(os.homedir(), '.zhoujian', 'data');
+
+function hasWeekData(dir) {
+  try {
+    return fs.readdirSync(path.join(dir, 'weeks')).some(f => /^\d{4}-W\d{2}\.json$/.test(f));
+  } catch (_) { return false; }
+}
+
+/* 旧版本可能留下数据的位置（按优先级） */
+function legacyDataDirs() {
+  const list = [];
+  try { list.push(path.join(app.getPath('userData'), 'data')); } catch (_) {}
+  if (app.isPackaged) {
+    if (process.env.PORTABLE_EXECUTABLE_DIR) list.push(path.join(process.env.PORTABLE_EXECUTABLE_DIR, 'data'));
+    try { list.push(path.join(path.dirname(app.getPath('exe')), 'data')); } catch (_) {}
+  } else {
+    list.push(path.join(__dirname, 'data'));
+  }
+  return list;
+}
+
+/* 递归复制（不覆盖已存在的文件），用于一次性迁移 */
+function copyDirInto(src, dst) {
+  try {
+    for (const name of fs.readdirSync(src)) {
+      const s = path.join(src, name), d = path.join(dst, name);
+      if (fs.statSync(s).isDirectory()) { fs.mkdirSync(d, { recursive: true }); copyDirInto(s, d); }
+      else if (!fs.existsSync(d)) fs.copyFileSync(s, d);
+    }
+  } catch (_) {}
+}
+
 function resolveDataDir() {
   if (process.env.ZHOUJIAN_DATA_DIR) return process.env.ZHOUJIAN_DATA_DIR;
-  const base = app.isPackaged
-    ? (process.env.PORTABLE_EXECUTABLE_DIR || path.dirname(app.getPath('exe')))
-    : __dirname;
-  const portable = path.join(base, 'data');
+
+  let root = DATA_HOME;
   try {
-    fs.mkdirSync(portable, { recursive: true });
-    fs.accessSync(portable, fs.constants.W_OK);
-    return portable;
+    fs.mkdirSync(root, { recursive: true });
+    fs.accessSync(root, fs.constants.W_OK);
   } catch (_) {
-    const fb = path.join(app.getPath('userData'), 'data');
-    try { fs.mkdirSync(fb, { recursive: true }); } catch (_) {}
-    return fb;
+    // 家目录不可写 → 退回 userData/data
+    root = path.join(app.getPath('userData'), 'data');
+    try { fs.mkdirSync(root, { recursive: true }); } catch (_) {}
+    return root;
   }
+
+  /* 首次运行（新位置还空着）→ 从旧位置迁移一次，避免升级后"便签不见了" */
+  const empty = !fs.existsSync(path.join(root, 'settings.json')) && !hasWeekData(root);
+  if (empty) {
+    for (const legacy of legacyDataDirs()) {
+      if (path.resolve(legacy) === path.resolve(root)) continue;
+      if (hasWeekData(legacy)) {
+        copyDirInto(legacy, root);
+        console.log('[周笺] 已从旧数据目录迁移：' + legacy + ' → ' + root);
+        break;
+      }
+    }
+  }
+  return root;
 }
 
 /* ------------------------------------------------------------------ 开机自启 */
@@ -222,7 +269,7 @@ function noteWindowOptions() {
     resizable: true,
     maximizable: false,
     fullscreenable: false,
-    skipTaskbar: false,
+    skipTaskbar: true,        // 任务栏不显示：只留托盘图标 + 桌面便签（托盘点击可唤出）
     show: false,
     alwaysOnTop: !!s.alwaysOnTop,
     title: '周笺',
@@ -354,7 +401,7 @@ function createReviewWindow(focusWeek) {
   reviewWin = new BrowserWindow({
     width: 1060, height: 720, minWidth: 820, minHeight: 520,
     frame: false, transparent: false, backgroundColor: '#14161b',
-    resizable: true, show: false, title: '周笺 · 回顾',
+    resizable: true, show: false, title: '周笺 · 回顾', skipTaskbar: true,
     icon: iconPath() || undefined,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),

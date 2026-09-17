@@ -1,7 +1,7 @@
 {
   "name": "zhoujian",
   "productName": "周笺",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "周笺 · 一张贴在 Windows 桌面上的周记便签：置顶悬浮、双击编辑、按周归档、可回顾检索",
   "main": "main.js",
   "author": "jiawei.ju",

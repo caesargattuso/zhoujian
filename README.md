@@ -103,6 +103,8 @@ npm install
 - 点标题栏的 📌 可随时切换置顶。
 - 无边框 + 圆角 + 半透明，可拖动、可八向缩放（拖边框/四角）。
 - 按 `✕` 是**收起到托盘**而不是退出，托盘图标点一下就能叫回来。想真正退出用托盘右键 → 退出周笺。
+- **不在任务栏显示**：整个程序只存在于**系统托盘 + 桌面便签**，任务栏与 Alt+Tab 里都不会出现（点一下托盘图标即可唤出）。
+- **右键不弹菜单**；**点到别处（失去焦点）会自动收回只读态**，不打断手头的事。
 
 ### 按周记录
 - 每一 ISO 周（周一到周日）独立归档，标题自动显示「2026 年第 38 周」。
@@ -209,7 +211,9 @@ npm install
 
 ## 数据在哪
 
-默认在项目目录下的 `data/`（便携版则在与 exe 同级的 `data/`；若该目录不可写会自动回落到 `%APPDATA%/周笺/data`）。
+默认在 **`~/.zhoujian/data`**（Windows 即 `%USERPROFILE%\.zhoujian\data`）——不随 exe 所在目录漂移，换构建/换盘数据都在。
+
+从老版本升级时，若新位置还没有数据，会**自动从旧位置迁移一次**（exe 同级 `data/` → 项目目录 `data/` → `%APPDATA%/周笺/data`）；家目录不可写时回落到 `%APPDATA%/周笺/data`。
 
 ```
 data/
@@ -275,7 +279,7 @@ node tools/build.js --out=dist-out  # 指定输出目录
 node tools/build.js --no-kill       # 不动正在运行的实例
 ```
 
-产物：`<输出目录>/周笺-<版本>-便携版.exe`（单文件，双击即用，配置和数据存在 `data/`）。
+产物：`<输出目录>/周笺-<版本>-便携版.exe`（单文件，双击即用，配置和数据存在 `~/.zhoujian/data`）。
 
 `tools/build.js` 处理了三件在国内网络 + 非管理员 Windows 上必踩的事：
 
@@ -377,7 +381,7 @@ todo-list/
 │  └─ review.html/css/js 回顾窗口
 ├─ tools/make_icon.py   图标生成（纯标准库，无第三方依赖）
 ├─ assets/              icon.png / icon.ico / tray.png
-├─ data/                数据目录（初始为空）
+├─ data/                开发期旧数据目录（正式数据在 ~/.zhoujian/data）
 ├─ shots/               界面截图产物
 ├─ start.bat / 启动周笺.vbs
 └─ package.json
